@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Complaint;
 use App\Http\Resources\ComplaintResource;
 use App\Models\Audit;
+use App\Models\Business;
 use App\Models\Staff;
 use App\Jobs\ComplaintForward;
 use App\Mail\StaffOnComplaint;
@@ -72,14 +73,13 @@ class ComplaintController extends Controller
         {
             $request->validate([
                 'name' => ['required', 'max:50'],
-                'detail' => ['required', 'max:1000'],
                 'advice' => ['required', 'max:1000'],
                 'status' => ['required', 'max:50'],
             ]);
             $complaint = Complaint::create([
                 'business' => $request->business,
                 'name' => $request->name,
-                'detail' => $request->detail,
+                'detail' => $request->detail??'',
                 'advice' => $request->advice,
                 'status' => $request->status,
                 'staff_id' => $request->staff_id,
@@ -91,8 +91,13 @@ class ComplaintController extends Controller
                 $email = $staff->email;
                 $email2 = $biz->email;
                 $staffname = $staff->name;
+                if($request->detail != ''){
                 $msg = "Dear ".$staffname."<br>A complaint <b>".$request->name."</b> with details ".$request->detail." has been submitted to you from <br><b>".$biz->name."</b> of <b>".$biz->priority."</b> priority";
                 $msg2 = "Dear ".$biz->name."<br>Your complaint <b>".$request->name."</b> with details ".$request->detail." has been forwarded to <br><b>".$staffname."</b> for follow up";
+                }else{
+                    $msg = "Dear ".$staffname."<br>A complaint <b>".$request->name."</b> has been submitted to you from <br><b>".$biz->name."</b> of <b>".$biz->priority."</b> priority";
+                    $msg2 = "Dear ".$biz->name."<br>Your complaint <b>".$request->name."</b> has been forwarded to <br><b>".$staffname."</b> for follow up";  
+                }
                 $subject = "Nugsoft Customer complaint";
                 ComplaintForward::dispatch(new StaffOnComplaint($email, $msg, $subject), $email);
                 ComplaintForward::dispatch(new StaffOnComplaint($email2, $msg2, $subject), $email2);

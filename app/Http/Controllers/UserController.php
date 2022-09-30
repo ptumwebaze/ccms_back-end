@@ -105,21 +105,20 @@ class UserController extends Controller
         }
 
         // CREATE USER
-                $user = User::create([
-                    'email' => $user->email,
-                    'staff_id' => $request->staff_id,
-                    'password' => Hash::make($request->password),
-                ]);
-                $que = User::where('email','=',$user->email)->first();
-                $action =  "New user ". $request->name." successfully registered";
-                $pay = Audit::create([
-                    'action' => $action,
-                    'addedby' => $que->id,
-                ]);
+        $user = User::create([
+            'email' => $user->email,
+            'staff_id' => $request->staff_id,
+            'password' => Hash::make($request->password),
+        ]);
+        $action =  "New user ". $request->name." successfully registered";
+        $pay = Audit::create([
+            'action' => $action,
+            'addedby' => $que->id,
+        ]);
 
-                return response([
-                    'message' => 'User created successfully',
-                ], 200);
+        return response([
+            'message' => 'User created successfully',
+        ], 200);
 
 	}
 

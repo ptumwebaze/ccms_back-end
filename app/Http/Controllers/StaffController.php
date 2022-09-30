@@ -24,7 +24,7 @@ class StaffController extends Controller
      */
     public function index()
     {
-        $staff = Staff::where('status',1)->get();
+        $staff = Staff::where('status',1)->Orwhere('status',2)->get();
         return StaffResource::Collection($staff);
     }
 
@@ -140,5 +140,24 @@ class StaffController extends Controller
             'message' => 'Staff deleted successfully.',
             'status' => 'success',
         ], 200);
+    }
+
+    // Enrol Staff
+    public function enrolstaff($id)
+    {
+        $staff = Staff::where('id','=',$id)->first();
+        // CREATE USER
+        $user = User::create([
+            'email' => $staff->email,
+            'staff_id' => $staff->id,
+            'password' => Hash::make(123456),
+        ]);
+        $staff->status = 2;
+        $staff->save();
+        $action =  "New user ". $staff->name." successfully enrolled";
+        $pay = Audit::create([
+            'action' => $action,
+            'addedby' => Auth::user()->id,
+        ]);
     }
 }
