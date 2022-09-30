@@ -34,6 +34,7 @@ Route::get('countcomp', [ComplaintController::class,'Compcount']);
 Route::get('compcount/{id}', [ComplaintController::class,'CountComp']);
 Route::get('thiscomplaint/{id}', [ComplaintController::class,'Thiscomplaint']);
 Route::get('userstaff', [StaffController::class,'userstaff']);
+Route::post('enrolstaff/{id}', [StaffController::class,'enrolstaff']);
 Route::post('logout', [UserController::class,'logout']);
 Route::resource('business', BusinessController::class);
 Route::resource('complaints', ComplaintController::class);
